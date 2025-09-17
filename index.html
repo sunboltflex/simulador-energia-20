@@ -141,7 +141,7 @@
       let consumo = parseFloat(document.getElementById('consumo').value) || 0;
 
       // Validação de negativos
-      if (iluminacao < 0 || consumo < 0) {
+      if (iluminacao <= 0 || consumo < 0) {
         document.getElementById('erro').textContent = "⚠️ Os valores não podem ser negativos.";
         document.getElementById('resultado').innerHTML = "";
         return;

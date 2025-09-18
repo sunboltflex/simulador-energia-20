@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Simulador de Desconto de Energia</title>
   <style>
-    html, body { /* Retirar a borda HORIZONTA E VERTICAL*/
+    html, body {
       height: 100%;
-      margin: 0;         /* remove margens */
-      padding: 0;        /* remove espaçamentos */
-      overflow: hidden;  /* remove a barra de rolagem */
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
+    
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f9;
       display: flex;
       justify-content: center;
       align-items: center;
-     /* min-height: 100vh;
+      /*min-height: 100vh;
       margin: 5;
       padding: 20px; */
     }
@@ -42,6 +43,9 @@
       max-width: 420px;
       width: 100%;
       margin-top: 200px; /* para não ficar escondido atrás da imagem */
+    }
+    .centralizado {
+      text-align: center; 
     }
 
     h2 {
@@ -96,10 +100,11 @@
       margin-top: 10px;
       text-align: center;
     }
-          /* RESPONSIVIDADE PARA CELULAR */
+
+    /* RESPONSIVIDADE PARA CELULAR */
     @media (max-width: 480px) {
       .top-image {
-        height: 180px;
+        height: 280px;
         background-size: contain;
       }
 
@@ -128,7 +133,7 @@
   <div class="top-image"></div>
 
   <div class="container">
-    <h2>Simule seu Desconto de 20%</h2>
+    <h2>Simule seu Desconto de 15%</h2>
     <label for="iluminacao">Iluminação Pública (R$):</label>
     <input type="number" id="iluminacao" inputmode="decimal" min="0" placeholder="Ex: 17,65">
 
@@ -158,16 +163,29 @@
       // Tarifas fixas da planilha
       const tarifaTE = 0.32159;
       const tarifaTUSD = 0.6098;
-      const adcBandeira = 0.10328;
+     const adcBandeira = 0.10328;
       const desconto = 0.20; // 20%
 
-      // Cálculo do valor da fatura
+      // Cálculo do valor da fatura (agora adcBandeira * consumo)
+     //let valorConsumo = (consumo * (tarifaTE + tarifaTUSD));
       let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
       let valorTotal = valorConsumo + iluminacao;
+     // let valorTotal = valorConsumo;
+
+
+      // 4. Valor da fatura com desconto aplicado
+      let valorComDesconto = valorTotal * desconto;
+      let valorDescFatura  = valorTotal - valorComDesconto;
 
       // Aplicando desconto (sem contar iluminação pública)
+
       let descontoMensal = valorTotal * desconto;
       let descontoAnual = descontoMensal * 12;
+
+      // 5. Garante que não fique negativo
+      if (valorDescFatura < 0) {
+       valorComDescFatura = 0;
+      }      
 
       // Formatação em R$ (compatível com Safari iOS)
       function formatar(valor) {
@@ -176,6 +194,8 @@
 
       document.getElementById('resultado').innerHTML = `
         <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
+        <p class="centralizado"><strong><span style="color: green;">FATURA SUNBOLT FLEX</span></strong></p>
+        <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
         <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
         <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
       `;

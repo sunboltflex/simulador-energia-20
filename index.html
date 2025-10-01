@@ -157,11 +157,11 @@
       const tarifaTE = 0.32159;
       const tarifaTUSD = 0.6098;
       const adcBandeira = 0.10328;
-      const tarifaAFTE = 0.31672;
-      const tarifaAFTUSD = 0.60049;
+     // const tarifaAFTE = 0.31672;
+     // const tarifaAFTUSD = 0.60049;
       const desconto = 0.20;
     
-      const valorConsumo = (consumo * (tarifaTE + tarifaTUSD - tarifaAFTE - tarifaAFTUSD)) + (consumo * adcBandeira);
+      const valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
       const valorTotal = valorConsumo + iluminacao;
       const valorComDesconto = valorTotal * desconto;
       const valorDescFatura = valorTotal - valorComDesconto;

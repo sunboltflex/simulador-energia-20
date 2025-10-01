@@ -54,7 +54,7 @@
       <!-- Resultado -->
       <div id="resultado" class="alert alert-light border mt-3" style="display:none;"></div>
 
-      <!-- Aviso -->
+      <!-- Aviso de fatura pequena -->
       <div id="aviso" class="text-danger fw-bold text-center"></div>
 
       <!-- Botão WhatsApp -->
@@ -105,7 +105,6 @@
       let descontoAnual = descontoMensal * 12;
       let valorComDesconto = valorTotal * desconto;
       let valorDescFatura = valorTotal - valorComDesconto;
-
       if (valorDescFatura < 0) valorDescFatura = 0;
 
       function formatar(valor) {
@@ -122,42 +121,4 @@
           <p><strong>Desconto aplicado:</strong> ${desconto * 100}%</p>
           <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
           <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
-          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
-          <p class="small text-muted"><strong>Esta é uma simulação.</strong> Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.</p>
-        `;
-      }
-
-      let resultadoDiv = document.getElementById('resultado');
-      resultadoDiv.innerHTML = resultadoHTML;
-      resultadoDiv.style.display = 'block';
-
-      if (valorTotal > 300) {
-        document.getElementById('btnWhatsApp').style.display = 'block';
-        document.getElementById('aviso').textContent = "";
-      } else {
-        document.getElementById('btnWhatsApp').style.display = 'none';
-        document.getElementById('aviso').textContent = "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
-      }
-    }
-
-    function enviarWhatsApp() {
-      if (valorTotal <= 300) {
-        alert("⚠️ O envio só é permitido para valores acima de R$ 300,00.");
-        return;
-      }
-      const resultadoTexto = document.getElementById('resultado').innerText;
-      const telefone = "5585999416424"; // número de destino
-      const mensagem = encodeURIComponent("Resultado do simulador de desconto de energia:\n\n" + resultadoTexto);
-      const url = `https://wa.me/${telefone}?text=${mensagem}`;
-      window.open(url, "_blank");
-    }
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        document.querySelector("button").click();
-      } 
-    });
-  </script>
-</body>
-</html>
+          <p><strong>Desconto anual previsto

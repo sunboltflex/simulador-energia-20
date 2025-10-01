@@ -140,7 +140,7 @@
   <div class="top-image"></div>
 
   <div class="container">
-    <h2>Simule seu Desconto 20%</h2>
+    <h2>Simule seu Desconto 20% - Gerador de Energia</h2>
     <label for="iluminacao">Iluminação Pública (R$):</label>
     <input type="number" id="iluminacao" inputmode="decimal" min="0" placeholder="Ex: 17,65" autofocus>
 
@@ -175,18 +175,13 @@
         document.getElementById('erro').textContent = "";
       }
 
-      const tarifaTE = 0.32162;
-      const tarifaTUSD = 0.60985;
-      const adcBandeira = 0.05;
+      const tarifaAFTE = 0,32183;
+      const tarifaAFTUSD = 0,61019;
+      const adcBandeira = 0,09182;
 
-      let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
+      let valorConsumo = (consumo * (tarifaAFTE + tarifaAFTUSD)) + (consumo * adcBandeira);
       valorTotal = valorConsumo + iluminacao;
 
-      let desconto = 0;
-      if (valorTotal >= 300 && valorTotal < 1000) {
-        desconto = 0.15;
-      } else if (valorTotal >= 1000) {
-        desconto = 0.20;
       }
 
       let descontoMensal = valorConsumo * desconto;

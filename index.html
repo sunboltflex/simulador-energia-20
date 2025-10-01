@@ -5,135 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Simulador de Desconto de Energia</title>
   <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    /* ❌ removi o overflow:hidden que travava a rolagem */
-  }
+    /* (Seu CSS continua igual, mantido aqui sem alterações) */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f9;
-    display: flex;
-    flex-direction: column; /* empilha logo + container */
-    align-items: center;
-    padding: 10px;
-  }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+    }
 
-  .top-image {
-    width: 100%;
-    max-width: 400px; /* limite em telas grandes */
-    height: 150px;
-    background: url("LOGO-03.png") no-repeat center center;
-    background-size: contain;
-    margin: 20px auto;
-    /* ❌ removi position:fixed */
-  }
-
-  .container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 420px;
-  }
-
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
-
-  label {
-    font-weight: bold;
-    margin-top: 10px;
-    display: block;
-  }
-
-  input {
-    width: 100%;
-    padding: 7px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-
-  button {
-    background: #28a745;
-    color: #fff;
-    border: none;
-    padding: 12px;
-    width: 100%;
-    border-radius: 6px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: #218838;
-  }
-
-  .resultado {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-  }
-
-  .erro {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
-    text-align: center;
-  }
-
-  #btnWhatsApp {
-    background-color: #25D366;
-    margin-top: 10px;
-    display: none;
-  }
-
-  #btnWhatsApp:hover {
-    background-color: #1ebe5b;
-  }
-
-  .aviso {
-    margin-top: 10px;
-    color: #b22222;
-    font-weight: bold;
-    text-align: center;
-  }
-
-  /* Responsividade */
-  @media (max-width: 600px) {
     .top-image {
-      height: 120px;
+      width: 100%;
+      max-width: 400px;
+      height: 150px;
+      background: url("LOGO-03.png") no-repeat center center;
+      background-size: contain;
+      margin: 20px auto;
     }
 
     .container {
-      padding: 15px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 420px;
     }
 
     h2 {
-      font-size: 18px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
     }
 
-    input, button {
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 7px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 16px;
     }
 
-    .resultado {
-      font-size: 14px;
+    button {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
     }
-  }
-</style>
 
+    button:hover {
+      background: #218838;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+
+    .erro {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #btnWhatsApp {
+      background-color: #25D366;
+      margin-top: 10px;
+      display: none;
+    }
+
+    #btnWhatsApp:hover {
+      background-color: #1ebe5b;
+    }
+
+    .aviso {
+      margin-top: 10px;
+      color: #b22222;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .top-image {
+        height: 120px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      input, button {
+        font-size: 16px;
+      }
+
+      .resultado {
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -159,11 +156,11 @@
   </div>
 
   <script>
-    let valorTotal = 0; // variável global
+    let valorTotal = 0;
 
     function calcular() {
-      let iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
-      let consumo = parseFloat(document.getElementById('consumo').value) || 0;
+      let iluminacao = parseFloat(document.getElementById('iluminacao').value.replace(',', '.')) || 0;
+      let consumo = parseFloat(document.getElementById('consumo').value.replace(',', '.')) || 0;
 
       if (iluminacao <= 0 || consumo < 0) {
         document.getElementById('erro').textContent = "⚠️ Os valores não podem ser negativos.";
@@ -175,23 +172,20 @@
         document.getElementById('erro').textContent = "";
       }
 
-      const tarifaAFTE = 0,32183;
-      const tarifaAFTUSD = 0,61019;
-      const adcBandeira = 0,09182;
+      const tarifaAFTE = 0.32183;
+      const tarifaAFTUSD = 0.61019;
+      const adcBandeira = 0.09182;
+      const desconto = 0.2;
 
       let valorConsumo = (consumo * (tarifaAFTE + tarifaAFTUSD)) + (consumo * adcBandeira);
       valorTotal = valorConsumo + iluminacao;
-
-      }
 
       let descontoMensal = valorConsumo * desconto;
       let descontoAnual = descontoMensal * 12;
       let valorComDesconto = valorTotal * desconto;
       let valorDescFatura = valorTotal - valorComDesconto;
 
-      if (valorDescFatura < 0) {
-        valorDescFatura = 0;
-      }
+      if (valorDescFatura < 0) valorDescFatura = 0;
 
       function formatar(valor) {
         return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -200,14 +194,11 @@
       let resultadoHTML = `
         <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
         <p style="text-align: center;"><strong><span style="color: green;">FATURA SUNBOLT FLEX</span></strong></p>
+        <p><strong>Desconto aplicado:</strong> ${desconto * 100}%</p>
+        <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
+        <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
+        <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
       `;
-
-      if (desconto > 0) {
-        resultadoHTML += `<p><strong>Desconto aplicado:</strong> ${desconto * 100}%</p>
-          <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
-          <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
-          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>`;
-      }
 
       document.getElementById('resultado').innerHTML = resultadoHTML;
 
@@ -227,18 +218,6 @@
       }
 
       const resultadoTexto = document.getElementById('resultado').innerText;
-      const telefone = "5585999416424"; // número de destino
+      const telefone = "5585999416424";
       const mensagem = encodeURIComponent("Resultado do simulador de desconto de energia:\n\n" + resultadoTexto);
-      const url = `https://wa.me/${telefone}?text=${mensagem}`;
-      window.open(url, "_blank");
-    }
-
-    document.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        document.querySelector("button").click();
-      } 
-    });
-  </script>
-</body>
-</html>
+      const url = `https://wa.me/${telefone

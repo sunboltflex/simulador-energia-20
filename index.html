@@ -211,7 +211,8 @@
         resultadoHTML += `<p><strong>Desconto aplicado:</strong> ${desconto * 100}%</p>
           <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
           <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
-          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>`;
+          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
+          <p><strong>Esta é uma simulação. Os valores de economia são estimativas que podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.</strong></p>`;
       }
 
       document.getElementById('resultado').innerHTML = resultadoHTML;

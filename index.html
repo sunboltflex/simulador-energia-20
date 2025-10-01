@@ -6,49 +6,38 @@
   <title>Simulador de Desconto de Energia</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
-      background: #f4f7fc;
-      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
     }
-
-    .top-image {
-      width: 180px;
-      margin: 30px auto 20px;
-      display: block;
-    }
-
     .card {
       border-radius: 1rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-
+    .top-image {
+      width: 180px;
+      height: auto;
+      margin: 20px auto;
+      display: block;
+    }
     #btnWhatsApp {
       background-color: #25D366;
       border: none;
-      font-weight: bold;
     }
     #btnWhatsApp:hover {
       background-color: #1ebe5b;
-    }
-
-    .icon {
-      font-size: 1.2rem;
-      margin-right: 5px;
     }
   </style>
 </head>
 <body>
 
   <div class="container py-4">
-
     <!-- Logo -->
     <img src="LOGO-03.png" alt="Logo" class="top-image">
 
-    <!-- Card Inputs -->
-    <div class="card p-4 mx-auto mb-4" style="max-width: 500px;">
-      <h3 class="text-center mb-4 text-primary fw-bold"><i class="bi bi-lightning-charge-fill"></i> Simule seu Desconto</h3>
+    <!-- Card Principal -->
+    <div class="card p-4 mx-auto" style="max-width: 500px;">
+      <h2 class="text-center mb-4">⚡ Simule seu Desconto</h2>
 
       <div class="mb-3">
         <label for="iluminacao" class="form-label fw-bold">Iluminação Pública (R$):</label>
@@ -60,49 +49,29 @@
         <input type="number" id="consumo" inputmode="decimal" min="0" placeholder="Ex: 220" class="form-control">
       </div>
 
-      <button class="btn btn-primary w-100 fw-bold" onclick="calcular()">
-        <i class="bi bi-calculator icon"></i> Calcular
-      </button>
+      <button class="btn btn-success w-100 mb-3" onclick="calcular()">Calcular</button>
 
-      <div id="erro" class="text-danger fw-bold text-center mt-2"></div>
-    </div>
+      <!-- Resultado -->
+      <div id="resultado" class="alert alert-light border mt-3" style="display:none;"></div>
 
-    <!-- Resultado -->
-    <div id="resultadoContainer" style="max-width: 500px; margin: auto; display:none;">
-      
-      <!-- Fatura -->
-      <div class="card p-3 mb-3 border-primary">
-        <h5 class="card-title text-primary fw-bold"><i class="bi bi-receipt-cutoff icon"></i> Fatura Estimada</h5>
-        <p id="valorFatura" class="card-text fs-5 fw-bold"></p>
-      </div>
-
-      <!-- Desconto -->
-      <div class="card p-3 mb-3 border-success">
-        <h5 class="card-title text-success fw-bold"><i class="bi bi-cash-stack icon"></i> Desconto Aplicado</h5>
-        <p id="valorDesconto" class="card-text"></p>
-      </div>
-
-      <!-- Observação -->
-      <div class="alert alert-warning mb-3" role="alert">
-        ⚠️ Esta é uma simulação. Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
-      </div>
-
-      <!-- Aviso fatura menor -->
-      <div id="aviso" class="text-danger fw-bold text-center mb-3"></div>
+      <!-- Aviso de fatura pequena -->
+      <div id="aviso" class="text-danger fw-bold text-center"></div>
 
       <!-- Botão WhatsApp -->
-      <button id="btnWhatsApp" class="btn w-100 text-white fw-bold mb-4" onclick="enviarWhatsApp()">
-        <i class="bi bi-whatsapp icon"></i> Enviar resultado pelo WhatsApp
+      <button id="btnWhatsApp" class="btn w-100 mt-3 text-white" onclick="enviarWhatsApp()" style="display:none;">
+        📲 Enviar resultado pelo WhatsApp
       </button>
-    </div>
 
+      <!-- Erro -->
+      <div id="erro" class="text-danger fw-bold text-center mt-2"></div>
+    </div>
   </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    let valorTotal = 0;
+    let valorTotal = 0; // variável global
 
     function calcular() {
       let iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
@@ -110,7 +79,9 @@
 
       if (iluminacao < 0 || consumo < 0) {
         document.getElementById('erro').textContent = "⚠️ Os valores não podem ser negativos.";
-        document.getElementById('resultadoContainer').style.display = 'none';
+        document.getElementById('resultado').style.display = 'none';
+        document.getElementById('btnWhatsApp').style.display = 'none';
+        document.getElementById('aviso').textContent = "";
         return;
       } else {
         document.getElementById('erro').textContent = "";
@@ -118,4 +89,80 @@
 
       const tarifaTE = 0.31672;
       const tarifaTUSD = 0.60049;
-      const
+      const adcBandeira = 0.05764;
+
+      let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
+      valorTotal = valorConsumo + iluminacao;
+
+      let desconto = 0;
+      if (valorTotal >= 300 && valorTotal < 1000) {
+        desconto = 0.15;
+      } else if (valorTotal >= 1000) {
+        desconto = 0.20;
+      }
+
+      let descontoMensal = valorConsumo * desconto;
+      let descontoAnual = descontoMensal * 12;
+      let valorComDesconto = valorTotal * desconto;
+      let valorDescFatura = valorTotal - valorComDesconto;
+      if (valorDescFatura < 0) valorDescFatura = 0;
+
+      function formatar(valor) {
+        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      }
+
+      let resultadoHTML = `
+        <p><strong>Valor estimado da fatura:</strong> ${formatar(valorTotal)}</p>
+        <p class="text-center text-success fw-bold">FATURA SUNBOLT FLEX</p>
+      `;
+
+      if (desconto > 0) {
+        resultadoHTML += `
+          <p><strong>Desconto aplicado:</strong> ${desconto * 100}%</p>
+          <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
+          <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
+          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
+        `;
+      }
+
+      // Observação destacada
+      resultadoHTML += `
+        <div class="alert alert-warning mt-3 mb-0 small" role="alert">
+          ⚠️ Esta é uma simulação. Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
+        </div>
+      `;
+
+      let resultadoDiv = document.getElementById('resultado');
+      resultadoDiv.innerHTML = resultadoHTML;
+      resultadoDiv.style.display = 'block';
+
+      if (valorTotal > 300) {
+        document.getElementById('btnWhatsApp').style.display = 'block';
+        document.getElementById('aviso').textContent = "";
+      } else {
+        document.getElementById('btnWhatsApp').style.display = 'none';
+        document.getElementById('aviso').textContent = "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
+      }
+    }
+
+    function enviarWhatsApp() {
+      if (valorTotal <= 300) {
+        alert("⚠️ O envio só é permitido para valores acima de R$ 300,00.");
+        return;
+      }
+      const resultadoTexto = document.getElementById('resultado').innerText;
+      const telefone = "5585999416424"; // número de destino
+      const mensagem = encodeURIComponent("Resultado do simulador de desconto de energia:\n\n" + resultadoTexto);
+      const url = `https://wa.me/${telefone}?text=${mensagem}`;
+      window.open(url, "_blank");
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.querySelector("button").click();
+      } 
+    });
+  </script>
+</body>
+</html>

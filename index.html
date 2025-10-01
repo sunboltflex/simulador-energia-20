@@ -2,156 +2,85 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulador de Desconto de Energia</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-    
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      /*min-height: 100vh;
-      margin: 5;
-      padding: 20px; */
+      background-color: #f4f4f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .top-image {
-      width: 50%;
+      width: 100%;
       height: 180px;
       background: url("LOGO-03.png") no-repeat center center;
-      background-size: cover;
-      position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-    }
-
-    .container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 420px;
-      width: 100%;
-      margin-top: 200px; /* para não ficar escondido atrás da imagem */
-    }
-    .centralizado {
-      text-align: center; 
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    label {
-      font-weight: bold;
-      margin-top: 10px;
-      display: block;
-    }
-
-    input {
-      width: 100%;
-      padding: 7px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    button {
-      background: #28a745;
-      color: #fff;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 6px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #218838;
-    }
-
-    .resultado {
+      background-size: contain;
       margin-top: 20px;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 16px;
     }
 
-    .erro {
-      color: red;
-      font-weight: bold;
-      margin-top: 10px;
+    .card {
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .btn-custom {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .btn-custom:hover {
+      background-color: #218838;
+    }
+
+    .centralizado {
       text-align: center;
     }
 
-    /* RESPONSIVIDADE PARA CELULAR */
     @media (max-width: 480px) {
       .top-image {
-        height: 280px;
-        background-size: contain;
-      }
-
-      .container {
-        margin-top: 160px;
-        padding: 20px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      input, button {
-        font-size: 16px;
-      }
-
-      .resultado {
-        font-size: 15px;
+        height: 150px;
       }
     }
   </style>
 </head>
 <body>
-  
-  <!-- Imagem superior -->
-  <div class="top-image"></div>
 
-  <div class="container">
-    <h2>Simule seu Desconto de 20%</h2>
-    <label for="iluminacao">Iluminação Pública (R$):</label>
-    <input type="number" id="iluminacao" inputmode="decimal" min="0" placeholder="Ex: 17,65" autofocus>
+  <!-- Imagem no topo -->
+  <div class="top-image mx-auto"></div>
 
-    <label for="consumo">Consumo Mensal (kWh):</label>
-    <input type="number" id="consumo" inputmode="decimal" min="0" placeholder="Ex: 220">
+  <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4" style="max-width: 450px; width: 100%;">
+      <h2 class="text-center mb-4">Simule seu Desconto de 20%</h2>
 
-    <button onclick="calcular()">Calcular</button>
+      <div class="mb-3">
+        <label for="iluminacao" class="form-label">Iluminação Pública (R$):</label>
+        <input type="number" class="form-control" id="iluminacao" inputmode="decimal" min="0" placeholder="Ex: 17,65" autofocus>
+      </div>
 
-    <div class="resultado" id="resultado"></div>
-    <div class="erro" id="erro"></div>
+      <div class="mb-3">
+        <label for="consumo" class="form-label">Consumo Mensal (kWh):</label>
+        <input type="number" class="form-control" id="consumo" inputmode="decimal" min="0" placeholder="Ex: 220">
+      </div>
+
+      <button class="btn btn-custom w-100" onclick="calcular()">Calcular</button>
+
+      <div id="resultado" class="mt-4"></div>
+      <div id="erro" class="mt-2 text-danger fw-bold text-center"></div>
+    </div>
   </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     function calcular() {
       let iluminacao = parseFloat(document.getElementById('iluminacao').value) || 0;
       let consumo = parseFloat(document.getElementById('consumo').value) || 0;
 
-      // Validação de negativos
       if (iluminacao <= 0 || consumo < 0) {
         document.getElementById('erro').textContent = "⚠️ Os valores não podem ser negativos.";
         document.getElementById('resultado').innerHTML = "";
@@ -160,44 +89,35 @@
         document.getElementById('erro').textContent = "";
       }
 
-      // Tarifas fixas da planilha
       const tarifaTE = 0.32159;
       const tarifaTUSD = 0.6098;
-     const adcBandeira = 0.10328;
-      const desconto = 0.20; // 20%
+      const adcBandeira = 0.10328;
+      const desconto = 0.20;
 
-      // Cálculo do valor da fatura (agora adcBandeira * consumo)
-     //let valorConsumo = (consumo * (tarifaTE + tarifaTUSD));
       let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
       let valorTotal = valorConsumo + iluminacao;
-     // let valorTotal = valorConsumo;
-
-
-      // 4. Valor da fatura com desconto aplicado
       let valorComDesconto = valorTotal * desconto;
       let valorDescFatura  = valorTotal - valorComDesconto;
-
-      // Aplicando desconto (sem contar iluminação pública)
 
       let descontoMensal = valorTotal * desconto;
       let descontoAnual = descontoMensal * 12;
 
-      // 5. Garante que não fique negativo
       if (valorDescFatura < 0) {
-       valorComDescFatura = 0;
-      }      
+        valorComDescFatura = 0;
+      }
 
-      // Formatação em R$ (compatível com Safari iOS)
       function formatar(valor) {
         return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       }
 
       document.getElementById('resultado').innerHTML = `
-        <p><strong>Valor da sua fatura:</strong> ${formatar(valorTotal)}</p>
-        <p class="centralizado"><strong><span style="color: green;">FATURA SUNBOLT FLEX</span></strong></p>
-        <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
-        <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
-        <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
+        <div class="alert alert-light border">
+          <p><strong>Valor da sua fatura:</strong> ${formatar(valorTotal)}</p>
+          <p class="centralizado"><strong><span class="text-success">FATURA SUNBOLT FLEX</span></strong></p>
+          <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
+          <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
+          <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
+        </div>
       `;
     }
   </script>

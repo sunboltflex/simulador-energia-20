@@ -154,23 +154,29 @@
         document.getElementById('erro').textContent = "";
       }
 
-      const tarifaTE = 0.32159;
-      const tarifaTUSD = 0.6098;
-      const adcBandeira = 0.10328;
-      const tarifaAFTE = 0.31672;
-      const tarifaAFTUSD = 0.60049;
-      const desconto = 0.20;
+      const tarifaTE = 0.32162;
+      const tarifaTUSD = 0.60985;
+      const adcBandeira = 0.05;
 
-      const tarifasBase = tarifaTE + tarifaTUSD;
-      const tarifasRedutoras = tarifaAFTE + tarifaAFTUSD;
+      let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
+      valorTotal = valorConsumo + iluminacao;
 
-      const valorConsumo = (consumo * (tarifasBase - tarifasRedutoras)) + (consumo * adcBandeira);
-      const valorTotal = valorConsumo + iluminacao;
-      const valorComDesconto = valorTotal * (1 - desconto);
+      let desconto = 0;
+      if (valorTotal >= 300 && valorTotal < 1000) {
+        desconto = 0.15;
+      } else if (valorTotal >= 1000) {
+        desconto = 0.20;
+      }
 
-      const descontoMensal = valorTotal - valorComDesconto;
-      const descontoAnual = descontoMensal * 12;
+      let descontoMensal = valorConsumo * desconto;
+      let descontoAnual = descontoMensal * 12;
+      let valorComDesconto = valorTotal * desconto;
+      let valorDescFatura = valorTotal - valorComDesconto;
 
+      if (valorDescFatura < 0) {
+        valorDescFatura = 0;
+      }
+      
       function formatar(valor) {
         return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       }

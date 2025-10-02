@@ -6,24 +6,55 @@
   <title>Simulador de Desconto de Energia</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
     body {
-      background: #f8f9fa;
+      min-height: 100vh;
+      margin: 0;
+      background: url("https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1600&q=80") 
+                  no-repeat center center fixed;
+      background-size: cover;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      position: relative;
     }
+
+    /* Camada escura para contraste */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(2px);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1; /* mantém os cards acima do fundo */
+    }
+
     .card {
       border-radius: 1rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+      background: rgba(255, 255, 255, 0.9); /* branco translúcido */
+      backdrop-filter: blur(8px);
     }
+
     .top-image {
       width: 180px;
       height: auto;
       margin: 20px auto;
       display: block;
     }
+
     #btnWhatsApp {
       background-color: #25D366;
       border: none;
     }
+
     #btnWhatsApp:hover {
       background-color: #1ebe5b;
     }

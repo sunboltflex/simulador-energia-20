@@ -193,4 +193,16 @@
       const resultadoTexto = document.getElementById('resultado').innerText;
       const telefone = "5585999416424";
       const mensagem = encodeURIComponent("Resultado do simulador de desconto de energia:\n\n" + resultadoTexto);
-      const url = `https://wa.me/${
+      const url = `https://wa.me/${telefone}?text=${mensagem}`;
+      window.open(url, "_blank");
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.querySelector("button").click();
+      }
+    });
+  </script>
+</body>
+</html>

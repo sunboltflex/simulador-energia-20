@@ -57,6 +57,19 @@
 
     #btnWhatsApp:hover {
       background-color: #1ebe5b;
+
+    .aviso-atencao {
+      background-color: #fff3cd;
+      border-left: 5px solid #ffa500;
+      padding: 12px;
+      margin-top: 15px;
+      font-size: 0.95rem;
+      color: #664d03;
+      border-radius: 4px;
+}
+    
+
+      
     }
   </style>
 </head>
@@ -153,7 +166,9 @@
           <p><strong>Valor Total da fatura c/ desconto:</strong> ${formatar(valorDescFatura)}</p>
           <p><strong>Desconto mensal previsto:</strong> ${formatar(descontoMensal)}</p>
           <p><strong>Desconto anual previsto:</strong> ${formatar(descontoAnual)}</p>
-          <p><strong>``⚠️ Esta é uma simulação. Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.``</strong></p>
+           <div class="aviso-atencao">
+          ⚠️ <strong>Atenção:</strong> Esta é uma simulação. Os valores podem variar conforme bandeiras tarifárias, consumo real e condições de contrato.
+          </div>
         `;
       }
 

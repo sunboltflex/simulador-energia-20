@@ -141,9 +141,9 @@
 
       let desconto = 0;
       if (valorTotal >= 300 && valorTotal < 1000) {
-        desconto = 0.15;
-      } else if (valorTotal >= 1000) {
         desconto = 0.20;
+      } else if (valorTotal >= 1000) {
+        desconto = 0.25;
       }
 
       let descontoMensal = valorConsumo * desconto;

@@ -78,18 +78,13 @@
       <h2 class="text-center mb-4">⚡ Simule seu Desconto - Gerador de Energia</h2>
 
       <div class="mb-3">
-        <label for="iluminacao" class="form-label fw-bold">Iluminação Pública (R$):</label>
-        <input type="number" id="iluminacao" inputmode="decimal" min="0" placeholder="Ex: 17,65" class="form-control" autofocus>
-      </div>
-
-      <div class="mb-3">
         <label for="consumo" class="form-label fw-bold">Consumo Mensal (kWh):</label>
-        <input type="number" id="consumo" inputmode="decimal" min="0" placeholder="Ex: 220" class="form-control">
+        <input type="text" id="consumo" inputmode="decimal" min="0" placeholder="Ex: 220" class="form-control" autofocus>
       </div>
 
       <div class="mb-3">
         <label for="descontoManual" class="form-label fw-bold">Desconto Manual (%):</label>
-        <input type="number" id="descontoManual" inputmode="decimal" min="0" max="100" placeholder="Ex: 20, 22, 25" class="form-control">
+        <input type="text" id="descontoManual" inputmode="decimal" min="0" max="100" placeholder="Ex: 20, 22, 25" class="form-control">
       </div>
 
       <button class="btn btn-success w-100 mb-3" onclick="calcular()">Calcular</button>
@@ -111,17 +106,21 @@
   <script>
     let valorTotal = 0;
 
+    function converterNumero(valor) {
+      if (!valor) return 0;
+      return parseFloat(valor.toString().replace(",", ".")) || 0;
+    }
+
     function calcular() {
-      let iluminacao = parseFloat(document.getElementById('iluminacao').value.replace(",", ".")) || 0;
-      let consumo = parseFloat(document.getElementById('consumo').value.replace(",", ".")) || 0;
-      let descontoManual = parseFloat(document.getElementById('descontoManual').value.replace(",", ".")) || 0;
+      let consumo = converterNumero(document.getElementById('consumo').value);
+      let descontoManual = converterNumero(document.getElementById('descontoManual').value);
 
       const erroDiv = document.getElementById('erro');
       const resultadoDiv = document.getElementById('resultado');
       const btnWhatsApp = document.getElementById('btnWhatsApp');
       const avisoDiv = document.getElementById('aviso');
 
-      if (iluminacao < 0 || consumo < 0 || descontoManual < 0) {
+      if (consumo < 0 || descontoManual < 0) {
         erroDiv.textContent = "⚠️ Os valores não podem ser negativos.";
         resultadoDiv.style.display = 'none';
         btnWhatsApp.style.display = 'none';
@@ -143,8 +142,8 @@
       const tarifaTUSD = 0.63974;
       const adcBandeira = 0.02765;
 
-      let valorConsumo = (consumo * (tarifaTE + tarifaTUSD)) + (consumo * adcBandeira);
-      valorTotal = valorConsumo + iluminacao;
+      let baseDesconto = consumo * (tarifaTE + tarifaTUSD);
+      valorTotal = baseDesconto + (consumo * adcBandeira);
 
       let desconto = 0;
 
@@ -158,7 +157,7 @@
         }
       }
 
-      let descontoMensal = valorConsumo * desconto;
+      let descontoMensal = baseDesconto * desconto;
       let descontoAnual = descontoMensal * 12;
       let valorDescFatura = valorTotal - descontoMensal;
 
@@ -188,7 +187,7 @@
       resultadoDiv.innerHTML = resultadoHTML;
       resultadoDiv.style.display = 'block';
 
-      if (valorTotal > 300) {
+      if (valorTotal >= 300) {
         btnWhatsApp.style.display = 'block';
         avisoDiv.textContent = "";
       } else {
@@ -198,7 +197,7 @@
     }
 
     function enviarWhatsApp() {
-      if (valorTotal <= 300) {
+      if (valorTotal < 300) {
         alert("⚠️ O envio só é permitido para valores acima de R$ 300,00.");
         return;
       }

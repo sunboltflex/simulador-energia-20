@@ -84,16 +84,26 @@
 
   <div class="container py-4">
 
-    <img src="LOGO-03.png" alt="Logo Sunbolt" class="top-image">
+    <img
+      src="LOGO-03.png"
+      alt="Logo Sunbolt"
+      class="top-image"
+    >
 
-    <div class="card p-4 mx-auto" style="max-width: 500px;">
+    <div
+      class="card p-4 mx-auto"
+      style="max-width: 500px;"
+    >
 
       <h2 class="text-center mb-4">
         ⚡ Simule seu Desconto - Gerador de Energia
       </h2>
 
       <div class="mb-3">
-        <label for="consumo" class="form-label fw-bold">
+        <label
+          for="consumo"
+          class="form-label fw-bold"
+        >
           Consumo Mensal (kWh):
         </label>
 
@@ -107,6 +117,27 @@
         >
       </div>
 
+      <div class="mb-3">
+        <label
+          for="valorFaturaEnel"
+          class="form-label fw-bold"
+        >
+          Valor da Fatura da Enel (R$):
+        </label>
+
+        <input
+          type="text"
+          id="valorFaturaEnel"
+          inputmode="decimal"
+          placeholder="Ex: 339,18"
+          class="form-control"
+        >
+
+        <small class="text-muted">
+          Informe o valor total apresentado na fatura da Enel.
+        </small>
+      </div>
+
       <div class="bloco-tarifas">
 
         <h5 class="text-center mb-3">
@@ -114,7 +145,10 @@
         </h5>
 
         <div class="mb-3">
-          <label for="tarifaTE" class="form-label fw-bold">
+          <label
+            for="tarifaTE"
+            class="form-label fw-bold"
+          >
             Tarifa TE (R$/kWh):
           </label>
 
@@ -128,7 +162,10 @@
         </div>
 
         <div class="mb-3">
-          <label for="tarifaTUSD" class="form-label fw-bold">
+          <label
+            for="tarifaTUSD"
+            class="form-label fw-bold"
+          >
             Tarifa TUSD (R$/kWh):
           </label>
 
@@ -142,7 +179,10 @@
         </div>
 
         <div>
-          <label for="adcBandeira" class="form-label fw-bold">
+          <label
+            for="adcBandeira"
+            class="form-label fw-bold"
+          >
             Adicional de Bandeira (R$/kWh):
           </label>
 
@@ -162,7 +202,10 @@
       </div>
 
       <div class="mb-3">
-        <label for="descontoManual" class="form-label fw-bold">
+        <label
+          for="descontoManual"
+          class="form-label fw-bold"
+        >
           Desconto Manual (%):
         </label>
 
@@ -173,6 +216,10 @@
           placeholder="Ex: 20, 22 ou 25"
           class="form-control"
         >
+
+        <small class="text-muted">
+          Caso fique vazio, o desconto será definido automaticamente.
+        </small>
       </div>
 
       <button
@@ -213,18 +260,45 @@
   </div>
 
   <script>
-    let valorTotal = 0;
+    let valorFaturaEnelAtual = 0;
 
     function converterNumero(valor) {
       if (!valor) {
         return 0;
       }
 
-      const valorLimpo = valor
+      let valorLimpo = valor
         .toString()
         .trim()
         .replace(/\s/g, "")
-        .replace(",", ".");
+        .replace(/R\$/gi, "");
+
+      /*
+        Aceita os formatos:
+
+        339,18
+        1.093,31
+        339.18
+        1093.31
+      */
+
+      if (
+        valorLimpo.includes(",") &&
+        valorLimpo.includes(".")
+      ) {
+        if (
+          valorLimpo.lastIndexOf(",") >
+          valorLimpo.lastIndexOf(".")
+        ) {
+          valorLimpo = valorLimpo
+            .replace(/\./g, "")
+            .replace(",", ".");
+        } else {
+          valorLimpo = valorLimpo.replace(/,/g, "");
+        }
+      } else if (valorLimpo.includes(",")) {
+        valorLimpo = valorLimpo.replace(",", ".");
+      }
 
       return parseFloat(valorLimpo) || 0;
     }
@@ -243,20 +317,34 @@
       });
     }
 
+    function formatarPercentual(valor) {
+      return valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+    }
+
     function ocultarResultado() {
       document.getElementById("resultado").style.display = "none";
+
       document.getElementById("btnWhatsApp").style.display = "none";
+
       document.getElementById("aviso").textContent = "";
     }
 
     function mostrarErro(mensagem) {
       document.getElementById("erro").textContent = mensagem;
+
       ocultarResultado();
     }
 
     function calcular() {
       const consumo = converterNumero(
         document.getElementById("consumo").value
+      );
+
+      const valorFaturaEnel = converterNumero(
+        document.getElementById("valorFaturaEnel").value
       );
 
       const tarifaTE = converterNumero(
@@ -276,75 +364,136 @@
       );
 
       const erroDiv = document.getElementById("erro");
-      const resultadoDiv = document.getElementById("resultado");
-      const btnWhatsApp = document.getElementById("btnWhatsApp");
-      const avisoDiv = document.getElementById("aviso");
+
+      const resultadoDiv =
+        document.getElementById("resultado");
+
+      const btnWhatsApp =
+        document.getElementById("btnWhatsApp");
+
+      const avisoDiv =
+        document.getElementById("aviso");
 
       if (consumo <= 0) {
-        mostrarErro("⚠️ Informe um consumo mensal válido.");
+        mostrarErro(
+          "⚠️ Informe um consumo mensal válido."
+        );
+
+        return;
+      }
+
+      if (valorFaturaEnel <= 0) {
+        mostrarErro(
+          "⚠️ Informe um valor válido para a fatura da Enel."
+        );
+
         return;
       }
 
       if (tarifaTE <= 0) {
-        mostrarErro("⚠️ Informe uma tarifa TE válida.");
+        mostrarErro(
+          "⚠️ Informe uma tarifa TE válida."
+        );
+
         return;
       }
 
       if (tarifaTUSD <= 0) {
-        mostrarErro("⚠️ Informe uma tarifa TUSD válida.");
+        mostrarErro(
+          "⚠️ Informe uma tarifa TUSD válida."
+        );
+
         return;
       }
 
       if (adcBandeira < 0) {
-        mostrarErro("⚠️ O adicional de bandeira não pode ser negativo.");
+        mostrarErro(
+          "⚠️ O adicional de bandeira não pode ser negativo."
+        );
+
         return;
       }
 
       if (descontoManual < 0) {
-        mostrarErro("⚠️ O desconto não pode ser negativo.");
+        mostrarErro(
+          "⚠️ O desconto não pode ser negativo."
+        );
+
         return;
       }
 
       if (descontoManual > 100) {
-        mostrarErro("⚠️ O desconto manual não pode ser maior que 100%.");
+        mostrarErro(
+          "⚠️ O desconto manual não pode ser maior que 100%."
+        );
+
         return;
       }
 
       erroDiv.textContent = "";
 
-      /*
-        As tarifas agora são informadas manualmente nos campos:
+      valorFaturaEnelAtual = valorFaturaEnel;
 
-        const tarifaTE
-        const tarifaTUSD
-        const adcBandeira
+      /*
+        A base do desconto é calculada utilizando:
+
+        Consumo × Tarifa TE
+        +
+        Consumo × Tarifa TUSD
+        +
+        Consumo × Adicional de Bandeira
       */
 
       const valorTE = consumo * tarifaTE;
-      const valorTUSD = consumo * tarifaTUSD;
-      const valorBandeira = consumo * adcBandeira;
 
-      valorTotal = valorTE + valorTUSD + valorBandeira;
+      const valorTUSD = consumo * tarifaTUSD;
+
+      const valorBandeira =
+        consumo * adcBandeira;
+
+      const baseCalculoDesconto =
+        valorTE +
+        valorTUSD +
+        valorBandeira;
 
       let desconto = 0;
+
+      /*
+        Caso o desconto manual seja informado,
+        ele terá prioridade.
+      */
 
       if (descontoManual > 0) {
         desconto = descontoManual / 100;
       } else {
-        if (valorTotal >= 300 && valorTotal < 1000) {
+        /*
+          Faixas automáticas:
+
+          De R$ 300,00 até R$ 999,99 = 15%
+          A partir de R$ 1.000,00 = 20%
+        */
+
+        if (
+          valorFaturaEnel >= 300 &&
+          valorFaturaEnel < 1000
+        ) {
           desconto = 0.15;
-        } else if (valorTotal >= 1000) {
+        } else if (valorFaturaEnel >= 1000) {
           desconto = 0.20;
         }
       }
 
-      const descontoMensal = valorTotal * desconto;
-      const descontoAnual = descontoMensal * 12;
+      const descontoMensal =
+        baseCalculoDesconto * desconto;
 
-      let valorDescFatura = valorTotal - descontoMensal;
+      const descontoAnual =
+        descontoMensal * 12;
 
-      if (valorDescFatura < 0) {
-        valorDescFatura = 0;
+      let valorDepoisDesconto =
+        valorFaturaEnel - descontoMensal;
+
+      if (valorDepoisDesconto < 0) {
+        valorDepoisDesconto = 0;
       }
 
       let resultadoHTML = `
@@ -375,8 +524,8 @@
         </p>
 
         <p>
-          <strong>Valor estimado da fatura:</strong>
-          ${formatarMoeda(valorTotal)}
+          <strong>Valor da fatura da Enel:</strong>
+          ${formatarMoeda(valorFaturaEnel)}
         </p>
       `;
 
@@ -386,9 +535,7 @@
 
           <p>
             <strong>Desconto aplicado:</strong>
-            ${(desconto * 100).toLocaleString("pt-BR", {
-              maximumFractionDigits: 2
-            })}%
+            ${formatarPercentual(desconto * 100)}%
           </p>
 
           <p>
@@ -403,7 +550,7 @@
 
           <p>
             <strong>Valor estimado após o desconto:</strong>
-            ${formatarMoeda(valorDescFatura)}
+            ${formatarMoeda(valorDepoisDesconto)}
           </p>
 
           <div class="aviso-atencao">
@@ -421,23 +568,27 @@
       }
 
       resultadoDiv.innerHTML = resultadoHTML;
+
       resultadoDiv.style.display = "block";
 
-      if (valorTotal >= 300) {
+      if (valorFaturaEnel >= 300) {
         btnWhatsApp.style.display = "block";
+
         avisoDiv.textContent = "";
       } else {
         btnWhatsApp.style.display = "none";
+
         avisoDiv.textContent =
           "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
       }
     }
 
     function enviarWhatsApp() {
-      if (valorTotal < 300) {
+      if (valorFaturaEnelAtual < 300) {
         alert(
           "⚠️ O envio só é permitido para valores a partir de R$ 300,00."
         );
+
         return;
       }
 
@@ -457,12 +608,16 @@
       window.open(url, "_blank");
     }
 
-    document.addEventListener("keydown", function(evento) {
-      if (evento.key === "Enter") {
-        evento.preventDefault();
-        calcular();
+    document.addEventListener(
+      "keydown",
+      function(evento) {
+        if (evento.key === "Enter") {
+          evento.preventDefault();
+
+          calcular();
+        }
       }
-    });
+    );
   </script>
 
 </body>

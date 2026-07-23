@@ -77,6 +77,36 @@
       border-radius: 8px;
       margin-bottom: 16px;
     }
+
+    .bloco-tipo-ligacao {
+      padding: 14px 15px;
+      margin-top: 14px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+    }
+
+    .opcao-ligacao {
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background-color: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .opcao-ligacao:last-child {
+      margin-bottom: 0;
+    }
+
+    .opcao-ligacao:hover {
+      background-color: #f1f5f9;
+    }
+
+    .opcao-ligacao label,
+    .opcao-ligacao input {
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -136,6 +166,48 @@
         <small class="text-muted">
           Informe o valor total apresentado na fatura da Enel.
         </small>
+
+        <div class="bloco-tipo-ligacao">
+
+          <label class="form-label fw-bold mb-2">
+            Tipo de ligação:
+          </label>
+
+          <div class="opcao-ligacao form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="tipoLigacao"
+              id="trifasico"
+              value="trifasico"
+            >
+
+            <label
+              class="form-check-label fw-semibold w-100"
+              for="trifasico"
+            >
+              TRIFÁSICO — descontar 100 kWh do consumo mensal
+            </label>
+          </div>
+
+          <div class="opcao-ligacao form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="tipoLigacao"
+              id="monofasico"
+              value="monofasico"
+            >
+
+            <label
+              class="form-check-label fw-semibold w-100"
+              for="monofasico"
+            >
+              MONOFÁSICO — descontar 30 kWh do consumo mensal
+            </label>
+          </div>
+
+        </div>
       </div>
 
       <div class="bloco-tarifas">
@@ -324,17 +396,21 @@
       });
     }
 
+    function formatarConsumo(valor) {
+      return valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+    }
+
     function ocultarResultado() {
       document.getElementById("resultado").style.display = "none";
-
       document.getElementById("btnWhatsApp").style.display = "none";
-
       document.getElementById("aviso").textContent = "";
     }
 
     function mostrarErro(mensagem) {
       document.getElementById("erro").textContent = mensagem;
-
       ocultarResultado();
     }
 
@@ -363,7 +439,13 @@
         document.getElementById("descontoManual").value
       );
 
-      const erroDiv = document.getElementById("erro");
+      const tipoLigacaoSelecionado =
+        document.querySelector(
+          'input[name="tipoLigacao"]:checked'
+        );
+
+      const erroDiv =
+        document.getElementById("erro");
 
       const resultadoDiv =
         document.getElementById("resultado");
@@ -385,6 +467,14 @@
       if (valorFaturaEnel <= 0) {
         mostrarErro(
           "⚠️ Informe um valor válido para a fatura da Enel."
+        );
+
+        return;
+      }
+
+      if (!tipoLigacaoSelecionado) {
+        mostrarErro(
+          "⚠️ Selecione o tipo de ligação: Trifásico ou Monofásico."
         );
 
         return;
@@ -434,22 +524,54 @@
 
       valorFaturaEnelAtual = valorFaturaEnel;
 
-      /*
-        A base do desconto é calculada utilizando:
+      const tipoLigacao =
+        tipoLigacaoSelecionado.value;
 
-        Consumo × Tarifa TE
-        +
-        Consumo × Tarifa TUSD
-        +
-        Consumo × Adicional de Bandeira
+      let consumoMinimo = 0;
+      let nomeTipoLigacao = "";
+
+      if (tipoLigacao === "trifasico") {
+        consumoMinimo = 100;
+        nomeTipoLigacao = "Trifásico";
+      } else {
+        consumoMinimo = 30;
+        nomeTipoLigacao = "Monofásico";
+      }
+
+      /*
+        Exemplo:
+
+        Consumo informado: 600 kWh
+
+        Trifásico:
+        600 - 100 = 500 kWh
+
+        Monofásico:
+        600 - 30 = 570 kWh
       */
 
-      const valorTE = consumo * tarifaTE;
+      const consumoConsiderado =
+        Math.max(consumo - consumoMinimo, 0);
 
-      const valorTUSD = consumo * tarifaTUSD;
+      /*
+        A base do desconto utiliza o consumo
+        após a retirada do custo de disponibilidade:
+
+        Consumo considerado × Tarifa TE
+        +
+        Consumo considerado × Tarifa TUSD
+        +
+        Consumo considerado × Adicional de Bandeira
+      */
+
+      const valorTE =
+        consumoConsiderado * tarifaTE;
+
+      const valorTUSD =
+        consumoConsiderado * tarifaTUSD;
 
       const valorBandeira =
-        consumo * adcBandeira;
+        consumoConsiderado * adcBandeira;
 
       const baseCalculoDesconto =
         valorTE +
@@ -505,7 +627,22 @@
 
         <p>
           <strong>Consumo informado:</strong>
-          ${consumo.toLocaleString("pt-BR")} kWh
+          ${formatarConsumo(consumo)} kWh
+        </p>
+
+        <p>
+          <strong>Tipo de ligação:</strong>
+          ${nomeTipoLigacao}
+        </p>
+
+        <p>
+          <strong>Custo de disponibilidade:</strong>
+          ${formatarConsumo(consumoMinimo)} kWh
+        </p>
+
+        <p>
+          <strong>Consumo considerado para o desconto:</strong>
+          ${formatarConsumo(consumoConsiderado)} kWh
         </p>
 
         <p>
@@ -533,7 +670,7 @@
         </p>
       `;
 
-      if (desconto > 0) {
+      if (desconto > 0 && consumoConsiderado > 0) {
         resultadoHTML += `
           <hr>
 
@@ -563,6 +700,14 @@
             bandeiras tarifárias, consumo real e condições de contrato.
           </div>
         `;
+      } else if (consumoConsiderado <= 0) {
+        resultadoHTML += `
+          <div class="aviso-atencao">
+            ⚠️ O consumo informado é menor ou igual ao custo de
+            disponibilidade da ligação. Não existe consumo disponível
+            para aplicação do desconto.
+          </div>
+        `;
       } else {
         resultadoHTML += `
           <div class="aviso-atencao">
@@ -572,18 +717,22 @@
       }
 
       resultadoDiv.innerHTML = resultadoHTML;
-
       resultadoDiv.style.display = "block";
 
-      if (valorFaturaEnel >= 300) {
+      if (
+        valorFaturaEnel >= 300 &&
+        consumoConsiderado > 0
+      ) {
         btnWhatsApp.style.display = "block";
-
         avisoDiv.textContent = "";
-      } else {
+      } else if (valorFaturaEnel < 300) {
         btnWhatsApp.style.display = "none";
 
         avisoDiv.textContent =
           "⚠️ Faturas abaixo de R$ 300,00 não podem aderir ao desconto.";
+      } else {
+        btnWhatsApp.style.display = "none";
+        avisoDiv.textContent = "";
       }
     }
 
@@ -617,7 +766,6 @@
       function(evento) {
         if (evento.key === "Enter") {
           evento.preventDefault();
-
           calcular();
         }
       }
